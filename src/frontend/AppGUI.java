@@ -34,7 +34,7 @@ public class AppGUI extends JFrame {
         this.auth = new AutenticacaoSGA();
         this.secretaria = new SecretariaSGA();
 
-        setTitle("SGA - Sistema de Gestão Académica (ISUTC)");
+        setTitle("SGA - Sistema de Gestão Académica");
         setSize(1050, 650); // Ligeiramente mais largo para caber todos os botões
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setLocationRelativeTo(null);
@@ -111,10 +111,10 @@ public class AppGUI extends JFrame {
         sidebar.add(lblLogo);
         sidebar.add(Box.createRigidArea(new Dimension(0, 40)));
 
-        JButton btnM = criarBotaoSidebar("1. Alunos Matriculados");
-        JButton btnF = criarBotaoSidebar("2. Fila de Atendimento");
+        JButton btnM = criarBotaoSidebar("1.  Alunos Matriculados");
+        JButton btnF = criarBotaoSidebar("2.  Fila de Atendimento");
         JButton btnB = criarBotaoSidebar("3. Pedidos de Bolsa");
-        JButton btnL = criarBotaoSidebar("Sair do Sistema");
+        JButton btnL = criarBotaoSidebar("  Sair do Sistema");
 
         sidebar.add(btnM); sidebar.add(Box.createRigidArea(new Dimension(0, 10)));
         sidebar.add(btnF); sidebar.add(Box.createRigidArea(new Dimension(0, 10)));
