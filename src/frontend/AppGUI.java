@@ -163,7 +163,7 @@ public class AppGUI extends JFrame {
         btnEntrarFila = new JButton("Entrar na Fila");
         btnAtenderFila = new JButton("Atender Fila");
         btnSubmeterBolsa = new JButton("Submeter Candidatura");
-        btnAtribuirBolsa = new JButton("Atribuir Bolsa");
+        btnAtribuirBolsa = new JButton("Atribuir Bolsa ");
 
         // Estilização
         estilizarBotaoAcao(btnPesquisar, new Color(74, 144, 226), Color.WHITE);
