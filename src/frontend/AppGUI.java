@@ -23,9 +23,16 @@ public class AppGUI extends JFrame {
     private JLabel lblTituloTabela;
     private String visualizacaoAtual = "MATRICULAS";
 
+    // --- BOTÕES DEDICADOS E EXPLÍCITOS ---
+    private JButton btnNovaMatricula;
+    private JButton btnEntrarFila;
+    private JButton btnAtenderFila;
+    private JButton btnSubmeterBolsa;
+    private JButton btnAtribuirBolsa;
+
     // Paleta de Cores Profissional
-    private final Color COR_PRIMARIA = new Color(41, 50, 65);     // Azul Escuro
-    private final Color COR_SECUNDARIA = new Color(238, 108, 77); // Laranja
+    private final Color COR_PRIMARIA = new Color(41, 50, 65);
+    private final Color COR_SECUNDARIA = new Color(238, 108, 77);
     private final Color COR_FUNDO = new Color(245, 247, 250);
     private final Color COR_TEXTO_SIDEBAR = new Color(200, 210, 220);
     private final Font FONTE_BASE = new Font("Segoe UI", Font.PLAIN, 14);
@@ -35,7 +42,7 @@ public class AppGUI extends JFrame {
         this.secretaria = new SecretariaSGA();
 
         setTitle("SGA - Sistema de Gestão Académica (ISUTC)");
-        setSize(1050, 650); // Ligeiramente mais largo para caber todos os botões
+        setSize(1100, 650);
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setLocationRelativeTo(null);
 
@@ -69,8 +76,7 @@ public class AppGUI extends JFrame {
         lblLogin.setForeground(COR_PRIMARIA);
         gbc.gridy = 0; gbc.gridwidth = 2; card.add(lblLogin, gbc);
 
-        gbc.gridwidth = 1;
-        gbc.gridy = 1; card.add(new JLabel("Utilizador:"), gbc);
+        gbc.gridwidth = 1; gbc.gridy = 1; card.add(new JLabel("Utilizador:"), gbc);
         JTextField txtUser = new JTextField("admin", 15); gbc.gridx = 1; card.add(txtUser, gbc);
 
         gbc.gridx = 0; gbc.gridy = 2; card.add(new JLabel("Senha:"), gbc);
@@ -143,28 +149,44 @@ public class AppGUI extends JFrame {
         scroll.setBorder(BorderFactory.createLineBorder(new Color(210, 210, 210)));
         scroll.getViewport().setBackground(Color.WHITE);
 
-        // --- PAINEL DE TODAS AS OPERAÇÕES OBRIGATÓRIAS ---
+        // --- PAINEL DE TODAS AS OPERAÇÕES ---
         JPanel painelOperacoes = new JPanel(new FlowLayout(FlowLayout.RIGHT, 10, 10));
         painelOperacoes.setBackground(COR_FUNDO);
 
+        // Botões Gerais (Sempre visíveis)
         JButton btnPesquisar = new JButton("Pesquisar ID");
         JButton btnOrdenar = new JButton("Ordenar A-Z");
         JButton btnRelatorio = new JButton("Gerar Relatório");
-        JButton btnAdicionar = new JButton("Nova Operação");
-        JButton btnProcessar = new JButton("Processar Fila/Heap");
 
-        // Estilização diferenciada para ajudar o utilizador a distinguir as ações
+        // Botões Contextuais (Aparecem dependendo da Aba)
+        btnNovaMatricula = new JButton("Nova Matrícula");
+        btnEntrarFila = new JButton("Entrar na Fila");
+        btnAtenderFila = new JButton("Atender Fila");
+        btnSubmeterBolsa = new JButton("Submeter Candidatura");
+        btnAtribuirBolsa = new JButton("Atribuir Bolsa");
+
+        // Estilização
         estilizarBotaoAcao(btnPesquisar, new Color(74, 144, 226), Color.WHITE);
         estilizarBotaoAcao(btnOrdenar, new Color(42, 157, 143), Color.WHITE);
         estilizarBotaoAcao(btnRelatorio, new Color(108, 117, 125), Color.WHITE);
-        estilizarBotaoAcao(btnAdicionar, COR_SECUNDARIA, Color.WHITE);
-        estilizarBotaoAcao(btnProcessar, COR_PRIMARIA, Color.WHITE);
 
+        estilizarBotaoAcao(btnNovaMatricula, COR_SECUNDARIA, Color.WHITE);
+
+        estilizarBotaoAcao(btnEntrarFila, COR_SECUNDARIA, Color.WHITE);
+        estilizarBotaoAcao(btnAtenderFila, COR_PRIMARIA, Color.WHITE);
+
+        estilizarBotaoAcao(btnSubmeterBolsa, COR_SECUNDARIA, Color.WHITE);
+        estilizarBotaoAcao(btnAtribuirBolsa, new Color(46, 204, 113), Color.WHITE); // Verde para destacar a Bolsa!
+
+        // Adicionar os botões ao painel
         painelOperacoes.add(btnPesquisar);
         painelOperacoes.add(btnOrdenar);
         painelOperacoes.add(btnRelatorio);
-        painelOperacoes.add(btnAdicionar);
-        painelOperacoes.add(btnProcessar);
+        painelOperacoes.add(btnNovaMatricula);
+        painelOperacoes.add(btnEntrarFila);
+        painelOperacoes.add(btnAtenderFila);
+        painelOperacoes.add(btnSubmeterBolsa);
+        painelOperacoes.add(btnAtribuirBolsa);
 
         areaCentro.add(lblTituloTabela, BorderLayout.NORTH);
         areaCentro.add(scroll, BorderLayout.CENTER);
@@ -173,52 +195,91 @@ public class AppGUI extends JFrame {
         main.add(sidebar, BorderLayout.WEST);
         main.add(areaCentro, BorderLayout.CENTER);
 
-        // Listeners de Navegação
+        // --- LISTENERS DE NAVEGAÇÃO ---
         btnM.addActionListener(e -> atualizarTabela("MATRICULAS"));
         btnF.addActionListener(e -> atualizarTabela("FILA"));
         btnB.addActionListener(e -> atualizarTabela("BOLSA"));
         btnL.addActionListener(e -> cardLayout.show(painelConteudo, "LOGIN"));
 
-        // Listeners de Inserção e Processamento
-        btnAdicionar.addActionListener(e -> acaoInserir());
-        btnProcessar.addActionListener(e -> acaoProcessar());
-
-        // --- LÓGICA DAS NOVAS OPERAÇÕES ---
-
-        // PESQUISA
+        // --- LISTENERS DAS OPERAÇÕES GERAIS ---
         btnPesquisar.addActionListener(e -> {
             try {
                 int id = Integer.parseInt(JOptionPane.showInputDialog(this, "Digite o ID do Aluno para Pesquisar:"));
                 Aluno a = secretaria.pesquisarAlunoPorId(id);
-                if (a != null) {
-                    JOptionPane.showMessageDialog(this, "ALUNO ENCONTRADO:\nID: " + a.getNumero() + "\nNome: " + a.getNome(), "Resultado da Pesquisa", JOptionPane.INFORMATION_MESSAGE);
-                } else {
-                    JOptionPane.showMessageDialog(this, "Nenhum aluno matriculado com o ID: " + id, "Aviso", JOptionPane.WARNING_MESSAGE);
-                }
-            } catch (Exception ex) { /* Tratamento silencioso caso feche a janela */ }
+                if (a != null) JOptionPane.showMessageDialog(this, "ALUNO ENCONTRADO:\nID: " + a.getNumero() + "\nNome: " + a.getNome(), "Pesquisa", JOptionPane.INFORMATION_MESSAGE);
+                else JOptionPane.showMessageDialog(this, "Nenhum aluno matriculado com o ID: " + id, "Aviso", JOptionPane.WARNING_MESSAGE);
+            } catch (Exception ex) { }
         });
 
-        // ORDENAÇÃO
         btnOrdenar.addActionListener(e -> {
             if (visualizacaoAtual.equals("MATRICULAS")) {
                 modeloTabela.setRowCount(0);
-                for (Aluno a : secretaria.obterMatriculadosOrdenadosPorNome()) {
-                    modeloTabela.addRow(new Object[]{a.getNumero(), a.getNome(), "ATIVO (Ordenado)"});
-                }
-                JOptionPane.showMessageDialog(this, "Lista ordenada via Bubble Sort.", "Ordenação Concluída", JOptionPane.INFORMATION_MESSAGE);
-            } else {
-                JOptionPane.showMessageDialog(this, "Aceda à aba 'Alunos Matriculados' para ordenar a lista principal.", "Aviso", JOptionPane.WARNING_MESSAGE);
-            }
+                for (Aluno a : secretaria.obterMatriculadosOrdenadosPorNome()) modeloTabela.addRow(new Object[]{a.getNumero(), a.getNome(), "ATIVO (Ordenado)"});
+                JOptionPane.showMessageDialog(this, "Lista ordenada via Bubble Sort.", "Ordenação", JOptionPane.INFORMATION_MESSAGE);
+            } else JOptionPane.showMessageDialog(this, "Aceda à aba 'Alunos Matriculados' para ordenar.", "Aviso", JOptionPane.WARNING_MESSAGE);
         });
 
-        // RELATÓRIO DE DESEMPENHO
         btnRelatorio.addActionListener(e -> {
             JTextArea textArea = new JTextArea(secretaria.gerarRelatorioDesempenho());
             textArea.setFont(new Font("Consolas", Font.PLAIN, 14));
             textArea.setEditable(false);
             textArea.setBackground(new Color(245, 245, 245));
             textArea.setBorder(new EmptyBorder(10, 10, 10, 10));
-            JOptionPane.showMessageDialog(this, new JScrollPane(textArea), "Relatório de Desempenho", JOptionPane.INFORMATION_MESSAGE);
+            JOptionPane.showMessageDialog(this, new JScrollPane(textArea), "Relatório", JOptionPane.INFORMATION_MESSAGE);
+        });
+
+        // --- LISTENERS DAS OPERAÇÕES CONTEXTUAIS ---
+
+        btnNovaMatricula.addActionListener(e -> {
+            String nome = JOptionPane.showInputDialog(this, "Nome Completo do Aluno:");
+            if (nome != null && !nome.trim().isEmpty()) {
+                Aluno a = secretaria.matricularAluno(nome);
+                JOptionPane.showMessageDialog(this, "Matrícula efetuada com sucesso!\nID Gerado: " + a.getNumero(), "Sucesso", JOptionPane.INFORMATION_MESSAGE);
+                atualizarTabela(visualizacaoAtual);
+            }
+        });
+
+        btnEntrarFila.addActionListener(e -> {
+            try {
+                int id = Integer.parseInt(JOptionPane.showInputDialog("ID do Aluno:"));
+                String nome = JOptionPane.showInputDialog("Confirme o Nome:");
+                if (secretaria.adicionarParaAtendimento(new Aluno(id, nome, 0.0))) {
+                    JOptionPane.showMessageDialog(this, "Aluno inserido na fila de atendimento.");
+                    atualizarTabela(visualizacaoAtual);
+                } else JOptionPane.showMessageDialog(this, "ERRO: Aluno não matriculado ou dados divergentes!", "Erro", JOptionPane.ERROR_MESSAGE);
+            } catch (Exception ex) { }
+        });
+
+        btnAtenderFila.addActionListener(e -> {
+            Aluno a = secretaria.proximoAAtender();
+            if (a != null) JOptionPane.showMessageDialog(this, "Atendimento Concluído para: " + a.getNome(), "Fila FIFO", JOptionPane.INFORMATION_MESSAGE);
+            else JOptionPane.showMessageDialog(this, "Não há ninguém na fila de espera.", "Aviso", JOptionPane.WARNING_MESSAGE);
+            atualizarTabela(visualizacaoAtual);
+        });
+
+        btnSubmeterBolsa.addActionListener(e -> {
+            try {
+                int id = Integer.parseInt(JOptionPane.showInputDialog("ID do Aluno:"));
+                String nome = JOptionPane.showInputDialog("Nome:");
+                double med = Double.parseDouble(JOptionPane.showInputDialog("Média Académica (0-20):"));
+                if (med < 0 || med > 20) { JOptionPane.showMessageDialog(this, "Média Inválida!", "Erro", JOptionPane.WARNING_MESSAGE); return; }
+
+                if (secretaria.submeterCandidaturaBolsa(new Aluno(id, nome, med))) {
+                    JOptionPane.showMessageDialog(this, "Candidatura submetida com sucesso!");
+                    atualizarTabela(visualizacaoAtual);
+                } else JOptionPane.showMessageDialog(this, "ERRO: Verificação de matrícula falhou!", "Erro", JOptionPane.ERROR_MESSAGE);
+            } catch (Exception ex) { }
+        });
+
+        // O BOTÃO DEDICADO QUE EXTRAI O MAX DO HEAP
+        btnAtribuirBolsa.addActionListener(e -> {
+            Aluno a = secretaria.aprovarProximaBolsa(); // Esta linha vai buscar a maior média
+            if (a != null) {
+                JOptionPane.showMessageDialog(this, "BOLSA ATRIBUÍDA COM SUCESSO!\n\nEstudante contemplado: " + a.getNome() + "\nMédia Académica: " + a.getMediaAcademica(), "Decisão do Max-Heap", JOptionPane.INFORMATION_MESSAGE);
+            } else {
+                JOptionPane.showMessageDialog(this, "Nenhuma candidatura pendente no Heap.", "Aviso", JOptionPane.WARNING_MESSAGE);
+            }
+            atualizarTabela(visualizacaoAtual);
         });
 
         return main;
@@ -228,105 +289,42 @@ public class AppGUI extends JFrame {
         this.visualizacaoAtual = tipo;
         modeloTabela.setRowCount(0);
 
+        // Controla que botões aparecem no painel baseando-se na aba atual
+        btnNovaMatricula.setVisible(tipo.equals("MATRICULAS"));
+
+        btnEntrarFila.setVisible(tipo.equals("FILA"));
+        btnAtenderFila.setVisible(tipo.equals("FILA"));
+
+        btnSubmeterBolsa.setVisible(tipo.equals("BOLSA"));
+        btnAtribuirBolsa.setVisible(tipo.equals("BOLSA"));
+
         if (tipo.equals("MATRICULAS")) {
-            lblTituloTabela.setText("Alunos Matriculados (Lista Duplamente Ligada)");
+            lblTituloTabela.setText("Alunos Matriculados ");
             modeloTabela.setColumnIdentifiers(new String[]{"ID Estudante", "Nome do Aluno", "Vínculo"});
-            for (Aluno a : secretaria.obterMatriculados()) {
-                modeloTabela.addRow(new Object[]{a.getNumero(), a.getNome(), "ATIVO"});
-            }
+            for (Aluno a : secretaria.obterMatriculados()) modeloTabela.addRow(new Object[]{a.getNumero(), a.getNome(), "ATIVO"});
+
         } else if (tipo.equals("FILA")) {
-            lblTituloTabela.setText("Fila de Espera (FIFO - First-In First-Out)");
+            lblTituloTabela.setText("Fila de Espera ");
             modeloTabela.setColumnIdentifiers(new String[]{"Posição", "ID Estudante", "Nome"});
             Aluno[] fila = secretaria.obterFilaEspera();
-            for (int i = 0; i < fila.length; i++) {
-                modeloTabela.addRow(new Object[]{(i+1) + "º", fila[i].getNumero(), fila[i].getNome()});
-            }
+            for (int i = 0; i < fila.length; i++) modeloTabela.addRow(new Object[]{(i+1) + "º", fila[i].getNumero(), fila[i].getNome()});
+
         } else if (tipo.equals("BOLSA")) {
-            lblTituloTabela.setText("Candidaturas a Bolsa (Heap - Prioridade por Média)");
+            lblTituloTabela.setText("Candidaturas a Bolsa ");
             modeloTabela.setColumnIdentifiers(new String[]{"ID Estudante", "Nome", "Média Académica"});
-            for (Aluno a : secretaria.obterBolsasPrioridade()) {
-                modeloTabela.addRow(new Object[]{a.getNumero(), a.getNome(), a.getMediaAcademica()});
-            }
+            for (Aluno a : secretaria.obterBolsasPrioridade()) modeloTabela.addRow(new Object[]{a.getNumero(), a.getNome(), a.getMediaAcademica()});
         }
-    }
-
-    private void acaoInserir() {
-        try {
-            if (visualizacaoAtual.equals("MATRICULAS")) {
-                String nome = JOptionPane.showInputDialog(this, "Nome Completo do Aluno:");
-
-                if (nome != null && !nome.trim().isEmpty()) {
-                    Aluno recemMatriculado = secretaria.matricularAluno(nome);
-                    JOptionPane.showMessageDialog(this,
-                            "Matrícula realizada com sucesso!\n" +
-                                    "Estudante: " + recemMatriculado.getNome() + "\n" +
-                                    "ID Gerado: " + recemMatriculado.getNumero(),
-                            "Matrícula Concluída", JOptionPane.INFORMATION_MESSAGE);
-                } else {
-                    return;
-                }
-
-            } else if (visualizacaoAtual.equals("FILA")) {
-                int id = Integer.parseInt(JOptionPane.showInputDialog("ID do Aluno:"));
-                String nome = JOptionPane.showInputDialog("Confirme o Nome:");
-                if (secretaria.adicionarParaAtendimento(new Aluno(id, nome, 0.0))) {
-                    JOptionPane.showMessageDialog(this, "Aluno inserido na fila de atendimento.");
-                } else {
-                    JOptionPane.showMessageDialog(this, "ERRO: Aluno não matriculado ou dados divergentes!", "Falha de Integridade", JOptionPane.ERROR_MESSAGE);
-                }
-
-            } else if (visualizacaoAtual.equals("BOLSA")) {
-                int id = Integer.parseInt(JOptionPane.showInputDialog("ID do Aluno:"));
-                String nome = JOptionPane.showInputDialog("Nome:");
-                double med = Double.parseDouble(JOptionPane.showInputDialog("Média Académica (0-20):"));
-
-                if (med < 0 || med > 20) {
-                    JOptionPane.showMessageDialog(this, "Média Inválida! Insira um valor entre 0 e 20.", "Erro de Input", JOptionPane.WARNING_MESSAGE);
-                    return;
-                }
-
-                if (secretaria.submeterCandidaturaBolsa(new Aluno(id, nome, med))) {
-                    JOptionPane.showMessageDialog(this, "Candidatura submetida com sucesso!");
-                } else {
-                    JOptionPane.showMessageDialog(this, "ERRO: Verificação de matrícula falhou!", "Falha de Integridade", JOptionPane.ERROR_MESSAGE);
-                }
-            }
-
-            atualizarTabela(visualizacaoAtual);
-
-        } catch (NumberFormatException ex) {
-            JOptionPane.showMessageDialog(this, "Erro: Certifique-se de que insere apenas números válidos no ID e na Média.", "Erro de Formatação", JOptionPane.ERROR_MESSAGE);
-        } catch (Exception ex) {}
-    }
-
-    private void acaoProcessar() {
-        if (visualizacaoAtual.equals("FILA")) {
-            Aluno a = secretaria.proximoAAtender();
-            if (a != null) JOptionPane.showMessageDialog(this, "Atendimento Concluído: " + a.getNome());
-            else JOptionPane.showMessageDialog(this, "Não há ninguém na fila de espera.");
-        } else if (visualizacaoAtual.equals("BOLSA")) {
-            Aluno a = secretaria.aprovarProximaBolsa();
-            if (a != null) JOptionPane.showMessageDialog(this, "BOLSA APROVADA\nBeneficiário: " + a.getNome() + "\nMédia: " + a.getMediaAcademica());
-            else JOptionPane.showMessageDialog(this, "Nenhuma candidatura pendente no Heap.");
-        } else {
-            JOptionPane.showMessageDialog(this, "Selecione 'Fila de Atendimento' ou 'Pedidos de Bolsa' para processar registros.");
-        }
-        atualizarTabela(visualizacaoAtual);
     }
 
     // --- AUXILIARES DE ESTILIZAÇÃO ---
-
     private JButton criarBotaoSidebar(String txt) {
         JButton b = new JButton(txt);
         b.setMaximumSize(new Dimension(230, 45));
         b.setFont(FONTE_BASE);
         b.setForeground(COR_TEXTO_SIDEBAR);
         b.setBackground(COR_PRIMARIA);
-        b.setFocusPainted(false);
-        b.setBorderPainted(false);
-        b.setCursor(new Cursor(Cursor.HAND_CURSOR));
+        b.setFocusPainted(false); b.setBorderPainted(false); b.setCursor(new Cursor(Cursor.HAND_CURSOR));
         b.setAlignmentX(Component.CENTER_ALIGNMENT);
-
         b.addMouseListener(new java.awt.event.MouseAdapter() {
             public void mouseEntered(java.awt.event.MouseEvent e) { b.setForeground(Color.WHITE); b.setBackground(new Color(61, 90, 128)); }
             public void mouseExited(java.awt.event.MouseEvent e) { b.setForeground(COR_TEXTO_SIDEBAR); b.setBackground(COR_PRIMARIA); }
@@ -337,10 +335,9 @@ public class AppGUI extends JFrame {
     private void estilizarBotaoAcao(JButton b, Color bg, Color fg) {
         b.setBackground(bg);
         b.setForeground(fg);
-        b.setFocusPainted(false);
-        b.setBorderPainted(false);
+        b.setFocusPainted(false); b.setBorderPainted(false);
         b.setFont(new Font("Segoe UI", Font.BOLD, 12));
-        b.setPreferredSize(new Dimension(150, 40));
+        // b.setPreferredSize removido para acomodar nomes maiores nos botões
         b.setCursor(new Cursor(Cursor.HAND_CURSOR));
     }
 
