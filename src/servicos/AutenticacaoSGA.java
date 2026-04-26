@@ -16,6 +16,8 @@ public class AutenticacaoSGA {
         this.utilizadores.adiciona(new Utilizador("admin", "senha123"));
         this.utilizadores.adiciona(new Utilizador("secretaria", "senha123"));
         this.utilizadores.adiciona(new Utilizador("anaestudante", "senha123"));
+        this.utilizadores.adiciona(new Utilizador("anaestudante1", "senha123"));
+
 
         // Registo inicial no histórico
         this.historicoLogins.push("SISTEMA: Utilizadores iniciais carregados.");
