@@ -93,7 +93,7 @@ public class AppGUI extends JFrame {
                 atualizarTabela("MATRICULAS");
             } else {
                 JOptionPane.showMessageDialog(this, "Credenciais Inválidas!", "Erro de Acesso", JOptionPane.ERROR_MESSAGE);
-                // Atualiza a tabela silenciosamente para registar o erro nos logs
+
                 if(visualizacaoAtual.equals("LOGS")) atualizarTabela("LOGS");
             }
         });
@@ -122,7 +122,7 @@ public class AppGUI extends JFrame {
         JButton btnM = criarBotaoSidebar("Alunos Matriculados");
         JButton btnF = criarBotaoSidebar("Fila de Atendimento");
         JButton btnB = criarBotaoSidebar("Pedidos de Bolsa");
-        JButton btnLogs = criarBotaoSidebar("Histórico de Acessos"); // NOVO BOTÃO
+        JButton btnLogs = criarBotaoSidebar("Histórico de Acessos");
         JButton btnL = criarBotaoSidebar("Sair do Sistema");
 
         sidebar.add(btnM); sidebar.add(Box.createRigidArea(new Dimension(0, 10)));
