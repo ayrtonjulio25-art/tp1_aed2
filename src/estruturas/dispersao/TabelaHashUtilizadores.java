@@ -1,6 +1,5 @@
 package estruturas.dispersao;
 
-
 import estruturas.lineares.ListaDuplamenteLigada;
 import modelo.Utilizador;
 
@@ -35,5 +34,30 @@ public class TabelaHashUtilizadores {
             }
         }
         return null;
+    }
+
+    /**
+     * Percorre todos os 26 buckets da tabela hash e recolhe
+     * todos os utilizadores num único array.
+     * Necessário para listar/ordenar utilizadores na interface.
+     */
+    public Utilizador[] listarTodos() {
+        // 1ª passagem: contar o total de utilizadores
+        int total = 0;
+        for (int i = 0; i < NUM_CATEGORIAS; i++) {
+            total += tabelaHash[i].tamanho();
+        }
+
+        // 2ª passagem: preencher o array resultado
+        Utilizador[] resultado = new Utilizador[total];
+        int pos = 0;
+        for (int i = 0; i < NUM_CATEGORIAS; i++) {
+            ListaDuplamenteLigada lista = tabelaHash[i];
+            for (int j = 0; j < lista.tamanho(); j++) {
+                resultado[pos++] = (Utilizador) lista.pega(j);
+            }
+        }
+
+        return resultado;
     }
 }

@@ -26,9 +26,21 @@ public class SecretariaSGA {
     }
 
     public boolean adicionarParaAtendimento(Aluno aluno) {
-        if (!alunosMatriculados.contem(aluno)) return false;
-        filaEsperaAtendimento.enqueue(aluno);
-        return true;
+        if (aluno == null) return false;
+
+        for (int i = 0; i < alunosMatriculados.tamanho(); i++) {
+            Aluno a = (Aluno) alunosMatriculados.pega(i);
+
+            if (a != null && a.getNumero() == aluno.getNumero()) {
+                filaEsperaAtendimento.enqueue(a);
+
+                System.out.println("DEBUG: aluno entrou na fila -> " + a.getNome());
+                return true;
+            }
+        }
+
+        System.out.println("DEBUG: aluno NÃO encontrado na lista");
+        return false;
     }
 
     public boolean submeterCandidaturaBolsa(Aluno aluno) {
