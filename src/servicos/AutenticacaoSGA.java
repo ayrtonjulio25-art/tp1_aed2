@@ -11,8 +11,22 @@ public class AutenticacaoSGA {
     public AutenticacaoSGA() {
         this.utilizadores = new TabelaHashUtilizadores();
         this.historicoLogins = new Pilha();
-        // Seed de dados
+
+        // Seed de dados: Utilizadores iniciais do sistema
         this.utilizadores.adiciona(new Utilizador("admin", "senha123"));
+        this.utilizadores.adiciona(new Utilizador("secretaria", "senha123"));
+        this.utilizadores.adiciona(new Utilizador("anaestudante", "senha123"));
+
+        // Registo inicial no histórico
+        this.historicoLogins.push("SISTEMA: Utilizadores iniciais carregados.");
+    }
+
+    // Método para permitir o cadastro de novos utilizadores dinamicamente
+    public void cadastrarUsuario(String username, String password) {
+        if (username != null && !username.trim().isEmpty()) {
+            this.utilizadores.adiciona(new Utilizador(username, password));
+            this.historicoLogins.push("SISTEMA: Novo utilizador criado - " + username);
+        }
     }
 
     public boolean login(String username, String password) {
