@@ -93,6 +93,8 @@ public class AppGUI extends JFrame {
                 atualizarTabela("MATRICULAS");
             } else {
                 JOptionPane.showMessageDialog(this, "Credenciais Inválidas!", "Erro de Acesso", JOptionPane.ERROR_MESSAGE);
+                // Atualiza a tabela silenciosamente para registar o erro nos logs
+                if(visualizacaoAtual.equals("LOGS")) atualizarTabela("LOGS");
             }
         });
 
@@ -117,14 +119,16 @@ public class AppGUI extends JFrame {
         sidebar.add(lblLogo);
         sidebar.add(Box.createRigidArea(new Dimension(0, 40)));
 
-        JButton btnM = criarBotaoSidebar("1. Alunos Matriculados");
-        JButton btnF = criarBotaoSidebar("2. Fila de Atendimento");
-        JButton btnB = criarBotaoSidebar("3. Pedidos de Bolsa");
+        JButton btnM = criarBotaoSidebar("Alunos Matriculados");
+        JButton btnF = criarBotaoSidebar("Fila de Atendimento");
+        JButton btnB = criarBotaoSidebar("Pedidos de Bolsa");
+        JButton btnLogs = criarBotaoSidebar("Histórico de Acessos"); // NOVO BOTÃO
         JButton btnL = criarBotaoSidebar("Sair do Sistema");
 
         sidebar.add(btnM); sidebar.add(Box.createRigidArea(new Dimension(0, 10)));
         sidebar.add(btnF); sidebar.add(Box.createRigidArea(new Dimension(0, 10)));
-        sidebar.add(btnB); sidebar.add(Box.createVerticalGlue());
+        sidebar.add(btnB); sidebar.add(Box.createRigidArea(new Dimension(0, 10)));
+        sidebar.add(btnLogs); sidebar.add(Box.createVerticalGlue());
         sidebar.add(btnL);
 
         // --- ÁREA DE DADOS (TABELA) ---
@@ -163,7 +167,7 @@ public class AppGUI extends JFrame {
         btnEntrarFila = new JButton("Entrar na Fila");
         btnAtenderFila = new JButton("Atender Fila");
         btnSubmeterBolsa = new JButton("Submeter Candidatura");
-        btnAtribuirBolsa = new JButton("Atribuir Bolsa ");
+        btnAtribuirBolsa = new JButton("Atribuir Bolsa");
 
         // Estilização
         estilizarBotaoAcao(btnPesquisar, new Color(74, 144, 226), Color.WHITE);
@@ -171,12 +175,10 @@ public class AppGUI extends JFrame {
         estilizarBotaoAcao(btnRelatorio, new Color(108, 117, 125), Color.WHITE);
 
         estilizarBotaoAcao(btnNovaMatricula, COR_SECUNDARIA, Color.WHITE);
-
         estilizarBotaoAcao(btnEntrarFila, COR_SECUNDARIA, Color.WHITE);
         estilizarBotaoAcao(btnAtenderFila, COR_PRIMARIA, Color.WHITE);
-
         estilizarBotaoAcao(btnSubmeterBolsa, COR_SECUNDARIA, Color.WHITE);
-        estilizarBotaoAcao(btnAtribuirBolsa, new Color(46, 204, 113), Color.WHITE); // Verde para destacar a Bolsa!
+        estilizarBotaoAcao(btnAtribuirBolsa, new Color(46, 204, 113), Color.WHITE);
 
         // Adicionar os botões ao painel
         painelOperacoes.add(btnPesquisar);
@@ -199,6 +201,7 @@ public class AppGUI extends JFrame {
         btnM.addActionListener(e -> atualizarTabela("MATRICULAS"));
         btnF.addActionListener(e -> atualizarTabela("FILA"));
         btnB.addActionListener(e -> atualizarTabela("BOLSA"));
+        btnLogs.addActionListener(e -> atualizarTabela("LOGS")); // NAVEGAÇÃO PARA OS LOGS
         btnL.addActionListener(e -> cardLayout.show(painelConteudo, "LOGIN"));
 
         // --- LISTENERS DAS OPERAÇÕES GERAIS ---
@@ -229,7 +232,6 @@ public class AppGUI extends JFrame {
         });
 
         // --- LISTENERS DAS OPERAÇÕES CONTEXTUAIS ---
-
         btnNovaMatricula.addActionListener(e -> {
             String nome = JOptionPane.showInputDialog(this, "Nome Completo do Aluno:");
             if (nome != null && !nome.trim().isEmpty()) {
@@ -271,9 +273,8 @@ public class AppGUI extends JFrame {
             } catch (Exception ex) { }
         });
 
-        // O BOTÃO DEDICADO QUE EXTRAI O MAX DO HEAP
         btnAtribuirBolsa.addActionListener(e -> {
-            Aluno a = secretaria.aprovarProximaBolsa(); // Esta linha vai buscar a maior média
+            Aluno a = secretaria.aprovarProximaBolsa();
             if (a != null) {
                 JOptionPane.showMessageDialog(this, "BOLSA ATRIBUÍDA COM SUCESSO!\n\nEstudante contemplado: " + a.getNome() + "\nMédia Académica: " + a.getMediaAcademica(), "Decisão do Max-Heap", JOptionPane.INFORMATION_MESSAGE);
             } else {
@@ -291,28 +292,43 @@ public class AppGUI extends JFrame {
 
         // Controla que botões aparecem no painel baseando-se na aba atual
         btnNovaMatricula.setVisible(tipo.equals("MATRICULAS"));
-
         btnEntrarFila.setVisible(tipo.equals("FILA"));
         btnAtenderFila.setVisible(tipo.equals("FILA"));
-
         btnSubmeterBolsa.setVisible(tipo.equals("BOLSA"));
         btnAtribuirBolsa.setVisible(tipo.equals("BOLSA"));
 
         if (tipo.equals("MATRICULAS")) {
-            lblTituloTabela.setText("Alunos Matriculados ");
+            lblTituloTabela.setText("Alunos Matriculados");
             modeloTabela.setColumnIdentifiers(new String[]{"ID Estudante", "Nome do Aluno", "Vínculo"});
             for (Aluno a : secretaria.obterMatriculados()) modeloTabela.addRow(new Object[]{a.getNumero(), a.getNome(), "ATIVO"});
 
         } else if (tipo.equals("FILA")) {
-            lblTituloTabela.setText("Fila de Espera ");
+            lblTituloTabela.setText("Fila de Espera (FIFO)");
             modeloTabela.setColumnIdentifiers(new String[]{"Posição", "ID Estudante", "Nome"});
             Aluno[] fila = secretaria.obterFilaEspera();
             for (int i = 0; i < fila.length; i++) modeloTabela.addRow(new Object[]{(i+1) + "º", fila[i].getNumero(), fila[i].getNome()});
 
         } else if (tipo.equals("BOLSA")) {
-            lblTituloTabela.setText("Candidaturas a Bolsa ");
+            lblTituloTabela.setText("Candidaturas a Bolsa (Max-Heap)");
             modeloTabela.setColumnIdentifiers(new String[]{"ID Estudante", "Nome", "Média Académica"});
             for (Aluno a : secretaria.obterBolsasPrioridade()) modeloTabela.addRow(new Object[]{a.getNumero(), a.getNome(), a.getMediaAcademica()});
+
+        } else if (tipo.equals("LOGS")) {
+            lblTituloTabela.setText("Histórico de Acessos (Pilha LIFO)");
+            modeloTabela.setColumnIdentifiers(new String[]{"Tempo", "Registo do Evento"});
+
+            // Chama o método que adicionámos ao AutenticacaoSGA
+            try {
+                String[] logs = auth.obterHistoricoParaInterface();
+                for (int i = 0; i < logs.length; i++) {
+                    if (logs[i] != null) {
+                        String indicador = (i == 0) ? " " : "";
+                        modeloTabela.addRow(new Object[]{"T-" + i, logs[i] + indicador});
+                    }
+                }
+            } catch (Exception ex) {
+                modeloTabela.addRow(new Object[]{"-", "Aviso: Método 'obterHistoricoParaInterface()' não encontrado em AutenticacaoSGA."});
+            }
         }
     }
 
@@ -337,7 +353,6 @@ public class AppGUI extends JFrame {
         b.setForeground(fg);
         b.setFocusPainted(false); b.setBorderPainted(false);
         b.setFont(new Font("Segoe UI", Font.BOLD, 12));
-        // b.setPreferredSize removido para acomodar nomes maiores nos botões
         b.setCursor(new Cursor(Cursor.HAND_CURSOR));
     }
 
