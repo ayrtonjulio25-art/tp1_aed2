@@ -13,6 +13,7 @@ public class AutenticacaoSGA {
         this.historicoLogins = new Pilha();
         // Seed de dados
         this.utilizadores.adiciona(new Utilizador("admin", "senha123"));
+        this.utilizadores.adiciona(new Utilizador("user1", "senha123"));
     }
 
     public boolean login(String username, String password) {
