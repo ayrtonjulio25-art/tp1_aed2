@@ -25,15 +25,18 @@ public class SecretariaSGA {
         return novoAluno;
     }
 
-    public boolean adicionarParaAtendimento(Aluno aluno) {
-        if (!alunosMatriculados.contem(aluno)) return false;
+    public boolean adicionarParaAtendimento(String nome) {
+        Aluno aluno = pesquisarAlunoPorNome(nome);
+        if (aluno == null) return false;
         filaEsperaAtendimento.enqueue(aluno);
         return true;
     }
 
-    public boolean submeterCandidaturaBolsa(Aluno aluno) {
-        if (!alunosMatriculados.contem(aluno)) return false;
-        filaBolsasEstudo.inserir(aluno);
+    public boolean submeterCandidaturaBolsa(String nome, double mediaAcademica) {
+        Aluno alunoRegistado = pesquisarAlunoPorNome(nome);
+        if (alunoRegistado == null) return false;
+        Aluno candidato = new Aluno(alunoRegistado.getNumero(), alunoRegistado.getNome(), mediaAcademica);
+        filaBolsasEstudo.inserir(candidato);
         return true;
     }
 
@@ -55,6 +58,19 @@ public class SecretariaSGA {
             }
         }
         return null; // Não encontrou
+    }
+
+    public Aluno pesquisarAlunoPorNome(String nome) {
+        if (nome == null) return null;
+        String alvo = nome.trim();
+        if (alvo.isEmpty()) return null;
+        for (int i = 0; i < alunosMatriculados.tamanho(); i++) {
+            Aluno a = (Aluno) alunosMatriculados.pega(i);
+            if (a != null && a.getNome().equalsIgnoreCase(alvo)) {
+                return a;
+            }
+        }
+        return null;
     }
 
     // 4. OPERAÇÃO OBRIGATÓRIA: ORDENAÇÃO (Bubble Sort Manual)

@@ -242,14 +242,14 @@ public class AppGUI extends JFrame {
         });
 
         btnEntrarFila.addActionListener(e -> {
-            try {
-                int id = Integer.parseInt(JOptionPane.showInputDialog("ID do Aluno:"));
-                String nome = JOptionPane.showInputDialog("Confirme o Nome:");
-                if (secretaria.adicionarParaAtendimento(new Aluno(id, nome, 0.0))) {
-                    JOptionPane.showMessageDialog(this, "Aluno inserido na fila de atendimento.");
-                    atualizarTabela(visualizacaoAtual);
-                } else JOptionPane.showMessageDialog(this, "ERRO: Aluno não matriculado ou dados divergentes!", "Erro", JOptionPane.ERROR_MESSAGE);
-            } catch (Exception ex) { }
+            String nome = JOptionPane.showInputDialog(this, "Nome do Aluno:");
+            if (nome == null || nome.trim().isEmpty()) return;
+            if (secretaria.adicionarParaAtendimento(nome.trim())) {
+                JOptionPane.showMessageDialog(this, "Aluno inserido na fila de atendimento.");
+                atualizarTabela(visualizacaoAtual);
+            } else {
+                JOptionPane.showMessageDialog(this, "ERRO: Aluno não matriculado!", "Erro", JOptionPane.ERROR_MESSAGE);
+            }
         });
 
         btnAtenderFila.addActionListener(e -> {
@@ -260,17 +260,23 @@ public class AppGUI extends JFrame {
         });
 
         btnSubmeterBolsa.addActionListener(e -> {
+            String nome = JOptionPane.showInputDialog(this, "Nome do Aluno:");
+            if (nome == null || nome.trim().isEmpty()) return;
+            String medStr = JOptionPane.showInputDialog(this, "Média Académica (0-20):");
+            if (medStr == null) return;
             try {
-                int id = Integer.parseInt(JOptionPane.showInputDialog("ID do Aluno:"));
-                String nome = JOptionPane.showInputDialog("Nome:");
-                double med = Double.parseDouble(JOptionPane.showInputDialog("Média Académica (0-20):"));
+                double med = Double.parseDouble(medStr);
                 if (med < 0 || med > 20) { JOptionPane.showMessageDialog(this, "Média Inválida!", "Erro", JOptionPane.WARNING_MESSAGE); return; }
 
-                if (secretaria.submeterCandidaturaBolsa(new Aluno(id, nome, med))) {
+                if (secretaria.submeterCandidaturaBolsa(nome.trim(), med)) {
                     JOptionPane.showMessageDialog(this, "Candidatura submetida com sucesso!");
                     atualizarTabela(visualizacaoAtual);
-                } else JOptionPane.showMessageDialog(this, "ERRO: Verificação de matrícula falhou!", "Erro", JOptionPane.ERROR_MESSAGE);
-            } catch (Exception ex) { }
+                } else {
+                    JOptionPane.showMessageDialog(this, "ERRO: Aluno não matriculado!", "Erro", JOptionPane.ERROR_MESSAGE);
+                }
+            } catch (NumberFormatException ex) {
+                JOptionPane.showMessageDialog(this, "Média Inválida!", "Erro", JOptionPane.WARNING_MESSAGE);
+            }
         });
 
         btnAtribuirBolsa.addActionListener(e -> {
