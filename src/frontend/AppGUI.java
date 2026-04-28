@@ -41,7 +41,7 @@ public class AppGUI extends JFrame {
         this.auth = new AutenticacaoSGA();
         this.secretaria = new SecretariaSGA();
 
-        setTitle("SGA - Sistema de Gestão Académica (ISUTC)");
+        setTitle("SGA - Sistema de Gestão Académica");
         setSize(1100, 650);
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setLocationRelativeTo(null);
