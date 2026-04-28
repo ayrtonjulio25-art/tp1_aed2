@@ -7,6 +7,7 @@ public class ListaDuplamenteLigada implements InterfaceGeral {
     private No ultimo;
     private int totalDeElementos;
 
+
     public void adicionaInicio(Object elemento) {
         if (this.totalDeElementos == 0) {
             No novo = new No(null, elemento, null);
@@ -66,7 +67,7 @@ public class ListaDuplamenteLigada implements InterfaceGeral {
 
     // Implementações simplificadas para satisfazer a interface
     public void adicionaPosicao(int posicao, Object elemento) { /* Lógica de travessia e inserção */ }
-    public void removePosicao(int posicao) { /* Lógica de travessia e remoção */ }
+    public void removePosicao(int posicao) {/* Lógica de travessia e remoção */ }
     public boolean contem(Object elemento) {
         No atual = inicio;
         while(atual != null) {

@@ -31,10 +31,10 @@ public class AppGUI extends JFrame {
     private JButton btnAtribuirBolsa;
 
     // Paleta de Cores Profissional
-    private final Color COR_PRIMARIA = new Color(41, 50, 65);
+    private final Color COR_PRIMARIA = new Color(10, 15, 23);
     private final Color COR_SECUNDARIA = new Color(238, 108, 77);
-    private final Color COR_FUNDO = new Color(245, 247, 250);
-    private final Color COR_TEXTO_SIDEBAR = new Color(200, 210, 220);
+    private final Color COR_FUNDO = new Color(186, 12, 47);
+    private final Color COR_TEXTO_SIDEBAR = new Color(221, 203, 34);
     private final Font FONTE_BASE = new Font("Segoe UI", Font.PLAIN, 14);
 
     public AppGUI() {
@@ -63,9 +63,11 @@ public class AppGUI extends JFrame {
         JPanel card = new JPanel(new GridBagLayout());
         card.setBackground(Color.WHITE);
         card.setBorder(BorderFactory.createCompoundBorder(
-                BorderFactory.createLineBorder(new Color(220, 220, 220), 1, true),
+                BorderFactory.createLineBorder(new Color(245, 248, 250), 1, true),
                 new EmptyBorder(40, 50, 40, 50)
         ));
+
+
 
         GridBagConstraints gbc = new GridBagConstraints();
         gbc.insets = new Insets(10, 0, 10, 0);
@@ -81,6 +83,8 @@ public class AppGUI extends JFrame {
 
         gbc.gridx = 0; gbc.gridy = 2; card.add(new JLabel("Senha:"), gbc);
         JPasswordField txtPass = new JPasswordField("senha123", 15); gbc.gridx = 1; card.add(txtPass, gbc);
+
+
 
         JButton btnEntrar = new JButton("ENTRAR");
         estilizarBotaoAcao(btnEntrar, COR_SECUNDARIA, Color.WHITE);
@@ -101,6 +105,8 @@ public class AppGUI extends JFrame {
         painelFundo.add(card);
         return painelFundo;
     }
+
+
 
     private JPanel criarPainelSecretaria() {
         JPanel main = new JPanel(new BorderLayout());

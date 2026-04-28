@@ -3,6 +3,8 @@ package estruturas.dispersao;
 import estruturas.lineares.ListaDuplamenteLigada;
 import modelo.Utilizador;
 
+
+
 public class TabelaHashUtilizadores {
     private ListaDuplamenteLigada[] tabelaHash;
     private final int NUM_CATEGORIAS = 26;
@@ -13,6 +15,8 @@ public class TabelaHashUtilizadores {
             tabelaHash[i] = new ListaDuplamenteLigada();
         }
     }
+
+
 
     private int codigoHash(String chave) {
         return Math.abs(chave.toLowerCase().charAt(0) % NUM_CATEGORIAS);
