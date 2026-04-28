@@ -45,36 +45,18 @@ public class SecretariaSGA {
         return novoAluno; // retorna o aluno criado para a interface usar
     }
 
-
-
-
-    // Adiciona um aluno à fila de atendimento, mas só se ele estiver matriculado
-    public boolean adicionarParaAtendimento(Aluno aluno) {
-        if (aluno == null) return false; // protecção contra dados nulos
-
-        // Percorre a lista de matriculados para verificar se o aluno existe — O(N)
-        for (int i = 0; i < alunosMatriculados.tamanho(); i++) {
-            Aluno a = (Aluno) alunosMatriculados.pega(i);
-
-            // Compara pelo número de aluno (ID único), não pelo objecto em memória
-            if (a != null && a.getNumero() == aluno.getNumero()) {
-                filaEsperaAtendimento.enqueue(a); // entra no fim da fila FIFO
-                System.out.println("DEBUG: aluno entrou na fila -> " + a.getNome());
-                return true; // sucesso
-            }
-        }
-
-        // Chegou aqui = aluno não está matriculado, recusa a entrada na fila
-        System.out.println("DEBUG: aluno NÃO encontrado na lista");
-        return false;
+    public boolean adicionarParaAtendimento(String nome) {
+        Aluno aluno = pesquisarAlunoPorNome(nome);
+        if (aluno == null) return false;
+        filaEsperaAtendimento.enqueue(aluno);
+        return true;
     }
 
-    // Submete candidatura a bolsa, verificando primeiro se o aluno está matriculado
-    public boolean submeterCandidaturaBolsa(Aluno aluno) {
-        // contem() usa o equals() de Aluno para comparar por número e nome
-        if (!alunosMatriculados.contem(aluno)) return false;
-
-        filaBolsasEstudo.inserir(aluno); // insere no heap — reorganiza-se em O(log N)
+    public boolean submeterCandidaturaBolsa(String nome, double mediaAcademica) {
+        Aluno alunoRegistado = pesquisarAlunoPorNome(nome);
+        if (alunoRegistado == null) return false;
+        Aluno candidato = new Aluno(alunoRegistado.getNumero(), alunoRegistado.getNome(), mediaAcademica);
+        filaBolsasEstudo.inserir(candidato);
         return true;
     }
 
@@ -110,12 +92,20 @@ public class SecretariaSGA {
         return null; // chegou ao fim sem encontrar: retorna null
     }
 
+    public Aluno pesquisarAlunoPorNome(String nome) {
+        if (nome == null) return null;
+        String alvo = nome.trim();
+        if (alvo.isEmpty()) return null;
+        for (int i = 0; i < alunosMatriculados.tamanho(); i++) {
+            Aluno a = (Aluno) alunosMatriculados.pega(i);
+            if (a != null && a.getNome().equalsIgnoreCase(alvo)) {
+                return a;
+            }
+        }
+        return null;
+    }
 
-    // =====================================================================
-    // OPERAÇÃO 4: ORDENAÇÃO (Bubble Sort)
-    // =====================================================================
-
-    // Retorna uma cópia da lista ordenada alfabeticamente pelo nome — O(N²)
+    // 4. OPERAÇÃO OBRIGATÓRIA: ORDENAÇÃO (Bubble Sort Manual)
     public Aluno[] obterMatriculadosOrdenadosPorNome() {
         Aluno[] alunos = obterMatriculados(); // copia para array — NÃO altera a lista original
 
