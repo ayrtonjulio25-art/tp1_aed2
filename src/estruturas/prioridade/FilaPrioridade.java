@@ -1,11 +1,15 @@
 package estruturas.prioridade;
 
 
-// Implementação de Max-Heap usando um array dinâmico construído do zero
+// Esta classe implementa uma fila de prioridade baseada em um Max-Heap,
+// utilizando um array dinâmico como estrutura interna.
 public class FilaPrioridade {
     private Comparable[] heap;
-    private int tamanho;
+    private int tamanho; // Quantos elementos existem atualmente
     private int capacidade;
+
+
+
 
     public FilaPrioridade(int capacidadeInicial) {
         this.capacidade = capacidadeInicial;
@@ -13,12 +17,16 @@ public class FilaPrioridade {
         this.tamanho = 0;
     }
 
+
+
     public void inserir(Comparable elemento) {
         if (tamanho == capacidade) expandirCapacidade();
         heap[tamanho] = elemento;
         subir(tamanho);
         tamanho++;
     }
+
+
 
     public Comparable extrairMaximo() {
         if (tamanho == 0) return null;
@@ -29,8 +37,15 @@ public class FilaPrioridade {
         return max;
     }
 
+
+
+    // O metodo subir reposiciona o elemento recem-inserido,
+    //garantindo que o heap mantenha a propriedade de máximo.
+
     private void subir(int indice) {
         int pai = (indice - 1) / 2;
+
+        //Se filho > pai → troca
         while (indice > 0 && heap[indice].compareTo(heap[pai]) > 0) {
             trocar(indice, pai);
             indice = pai;
@@ -64,6 +79,7 @@ public class FilaPrioridade {
         System.arraycopy(heap, 0, novoHeap, 0, tamanho);
         heap = novoHeap;
     }
+
 
     public Comparable[] getElementos() {
         Comparable[] copia = new Comparable[tamanho];

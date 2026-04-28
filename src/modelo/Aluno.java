@@ -15,9 +15,10 @@ public class Aluno implements Comparable<Aluno> {
     public String getNome() { return nome; }
     public double getMediaAcademica() { return mediaAcademica; }
 
+
     @Override
     public int compareTo(Aluno outro) {
-        // Ordenação decrescente: maior média tem maior prioridade no Heap
+        // Ordenação: maior média tem maior prioridade no Heap
         return Double.compare(this.mediaAcademica, outro.mediaAcademica);
     }
 
