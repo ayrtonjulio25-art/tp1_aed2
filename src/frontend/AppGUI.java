@@ -296,7 +296,7 @@ public class AppGUI extends JFrame {
         this.visualizacaoAtual = tipo;
         modeloTabela.setRowCount(0);
 
-        // Controla que botões aparecem no painel baseando-se na aba atual
+
         btnNovaMatricula.setVisible(tipo.equals("MATRICULAS"));
         btnEntrarFila.setVisible(tipo.equals("FILA"));
         btnAtenderFila.setVisible(tipo.equals("FILA"));
